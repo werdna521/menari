@@ -1,5 +1,6 @@
 package app.android.werdna.menari
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.PointF
@@ -38,26 +39,7 @@ class NotMainActivity : AppCompatActivity() {
 
         poseDetector = PoseDetection.getClient(options)
 
-        path = getExternalFilesDir(null)?.absolutePath ?: "gilak"
-        if (path == "gilak") {
-            return Toast.makeText(
-                this,
-                "Wah gilak hpmu, coba kau tengok dulu ada gak folder /files di app.android.werdna.menari",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-
-        trainImageList = listImages(File("$path${File.separator}train"))
-        realImageList = listImages(File("$path${File.separator}real"))
-
-        Toast.makeText(this, "JANGAN KAU PENCET DULU LODING DIA NINUNINU", Toast.LENGTH_LONG).show()
-
-        realImageList.forEach { _ ->
-            inference(0, false, i)
-            i++
-        }
-
-        nextImage()
+        init(true)
 
         perfect.setOnClickListener(View.OnClickListener {
             inference(1, true, null)
@@ -71,7 +53,71 @@ class NotMainActivity : AppCompatActivity() {
             inference(3, true, null)
         })
 
+        reset.setOnClickListener(View.OnClickListener {
+            resetIndex()
+        })
+
         Toast.makeText(this, "HA PENCET LA KAU", Toast.LENGTH_LONG).show()
+    }
+
+    private fun init(pre: Boolean) {
+        index = getCurrentIndex()
+
+        path = getExternalFilesDir(null)?.absolutePath ?: "gilak"
+        if (path == "gilak") {
+            return Toast.makeText(
+                this,
+                "Wah gilak hpmu, coba kau tengok dulu ada gak folder /files di app.android.werdna.menari",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+        trainImageList = listImages(File("$path${File.separator}train"))
+        realImageList = listImages(File("$path${File.separator}real"))
+
+        if (index >= trainImageList.size) {
+            setIndex(-1)
+            index = -1
+        }
+
+        Toast.makeText(this, "JANGAN KAU PENCET DULU LODING DIA NINUNINU", Toast.LENGTH_LONG).show()
+
+        if (index == -1) {
+            realImageList.forEach { _ ->
+                inference(0, false, i)
+                i++
+            }
+
+            nextImage()
+        } else {
+            huahua.setImageBitmap(decodeToBitmap(trainImageList[index]))
+            asli.setImageBitmap(decodeToBitmap(realImageList[index]))
+        }
+
+        if (!pre) Toast.makeText(this, "HA PENCET LA KAU", Toast.LENGTH_LONG).show()
+    }
+
+    private fun getCurrentIndex(): Int {
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        return sharedPref.getInt("index", -1)
+    }
+
+    private fun setIndex(a: Int) {
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        with (sharedPref.edit()) {
+            putInt("index", a)
+            apply()
+        }
+    }
+
+    private fun updateIndex() {
+        setIndex(index)
+    }
+
+    private fun resetIndex() {
+        setIndex(-1)
+        index = -1
+        init(false)
     }
 
     private fun inference(label: Int, train: Boolean, idx: Int?) {
@@ -153,6 +199,7 @@ class NotMainActivity : AppCompatActivity() {
         } else {
             huahua.setImageBitmap(decodeToBitmap(trainImageList[++index]))
             asli.setImageBitmap(decodeToBitmap(realImageList[index]))
+            updateIndex()
         }
     }
 

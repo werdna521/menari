@@ -40,11 +40,15 @@
             android:layout_height="wrap_content"
             android:text="GOOD"/>
         <Button
-
             android:id="@+id/bad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="BAD"/>
+        <Button
+            android:id="@+id/reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RESET"/>
     </LinearLayout>
 
 </LinearLayout>
