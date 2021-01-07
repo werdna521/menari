@@ -34,7 +34,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import app.android.werdna.menari.R
 
-typealias HaiyaListener = (pose: Pose?, imageProxy: ImageProxy?) -> Unit
+typealias HaiyaListener = (pose: Pose?, imageProxy: ImageProxy?, hello: Boolean) -> Unit
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,16 +54,30 @@ class MainActivity : AppCompatActivity() {
 
                 val result = poseDetector.process(image)
                     .addOnSuccessListener { pose ->
-                        listener(pose, imageProxy)
+                        listener(pose, imageProxy, true)
                         imageProxy.close()
                     }
                     .addOnFailureListener { e ->
-                        listener(null, null)
+                        listener(null, null, true)
                         imageProxy.close()
                     }
 
                 lastAnalyzedTime = currentTime
-            } else {
+            } else if (mediaImage != null)  {
+                val image =
+                    InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+                val result = poseDetector.process(image)
+                    .addOnSuccessListener { pose ->
+                        listener(pose, imageProxy, false)
+                        imageProxy.close()
+                    }
+                    .addOnFailureListener { e ->
+                        listener(null, null, false)
+                        imageProxy.close()
+                    }
+            }
+             else {
                 imageProxy.close()
             }
         }
@@ -225,27 +239,28 @@ class MainActivity : AppCompatActivity() {
                 .also {
                     it.setAnalyzer(
                         cameraExecutor,
-                        HaiyaAnalyzer(poseDetector) { pose, imageProxy ->
+                        HaiyaAnalyzer(poseDetector) { pose, imageProxy, hello ->
 //                            if (imageProxy != null) {
 //                                mamak.setImageBitmap(imageProxy.image?.toBitmap())
 //                            }
-                            show()
-//                            graphics_overlay.clear()
-//                            if (pose != null) {
-//                                graphics_overlay.add(
-//                                    PoseGraphic(
-//                                        graphics_overlay,
-//                                        pose,
-//                                        false,
-//                                        imageProxy!!,
-//                                        graphics_overlay.width,
-//                                        graphics_overlay.height
-//                                    )
-//                                )
-//                            } else {
-//                                Log.d(TAG, "BO MIA CUI")
-//                            }
-//                            graphics_overlay.postInvalidate()
+                            if (hello) show()
+                            graphics_overlay.clear()
+                            if (pose != null) {
+                                graphics_overlay.add(
+                                    PoseGraphic(
+                                        graphics_overlay,
+                                        pose,
+                                        false,
+                                        imageProxy!!,
+                                        viewFinder.width,
+                                        viewFinder.height,
+                                        graphics_overlay.height
+                                    )
+                                )
+                            } else {
+                                Log.d(TAG, "BO MIA CUI")
+                            }
+                            graphics_overlay.postInvalidate()
                         })
                 }
 
