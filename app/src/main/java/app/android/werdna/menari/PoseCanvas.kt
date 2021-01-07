@@ -18,7 +18,8 @@ class PoseGraphic internal constructor(
     private val showInFrameLikelihood: Boolean,
     private val imageProxy: ImageProxy,
     private val viewWidth: Int,
-    private val viewHeight: Int
+    private val viewHeight: Int,
+    private val realHeight: Int
 ) :
     GraphicOverlay.Graphic(overlay) {
     private val leftPaint: Paint
@@ -127,8 +128,8 @@ class PoseGraphic internal constructor(
     fun drawPoint(canvas: Canvas, landmark: PoseLandmark, paint: Paint) {
         val point = landmark.position
         canvas.drawCircle(
-            translateX(multiplierX * point.x),
-            translateY(multiplierY * point.y),
+            translateX(multiplierX * point.x + 24),
+            translateY(realHeight - 24 - viewHeight + multiplierY * point.y),
             DOT_RADIUS,
             paint
         )
@@ -143,10 +144,10 @@ class PoseGraphic internal constructor(
         val start = startLandmark.position
         val end = endLandmark.position
         canvas.drawLine(
-            translateX(multiplierX * start.x),
-            translateY(multiplierY * start.y),
-            translateX(multiplierX * end.x),
-            translateY(multiplierY * end.y),
+            translateX(multiplierX * start.x + 24),
+            translateY(realHeight - 24 - viewHeight + multiplierY * start.y),
+            translateX(multiplierX * end.x + 24),
+            translateY(realHeight - 24 - viewHeight + multiplierY * end.y),
             paint
         )
     }
