@@ -113,11 +113,11 @@ class MainActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
-    private val dice = listOf(1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3)
+    private val dice = listOf(1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3)
     private var score = 0
 
     private fun show() {
-        val drawable = dice[(0..dice.size).random() - 1]
+        val drawable = dice[(1 until dice.size).random() - 1]
         score += if (drawable == 1) 100 else if (drawable == 2) 50 else 0
         scoreView.text = score.toString()
 
