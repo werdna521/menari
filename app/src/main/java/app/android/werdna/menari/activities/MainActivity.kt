@@ -1,6 +1,7 @@
 package app.android.werdna.menari.activities
 
 import android.Manifest
+import android.animation.Animator
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.*
@@ -11,6 +12,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Size
 import android.view.View
+import android.view.animation.Animation
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
@@ -111,6 +113,66 @@ class MainActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
+    private val dice = listOf(1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3)
+    private var score = 0
+
+    private fun show() {
+        val drawable = dice[(0..dice.size).random() - 1]
+        score += if (drawable == 1) 100 else if (drawable == 2) 50 else 0
+        scoreView.text = score.toString()
+
+        label.apply {
+            setImageDrawable(resources.getDrawable(if (drawable == 1) R.drawable.perfect else if (drawable == 2) R.drawable.good else R.drawable.bad))
+            alpha = 0f
+            visibility = View.VISIBLE
+
+            animate()
+                .alpha(1f)
+                .setDuration(400.toLong())
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationRepeat(p0: Animator?) {
+                    }
+
+                    override fun onAnimationEnd(p0: Animator?) {
+                        hide()
+                    }
+
+                    override fun onAnimationCancel(p0: Animator?) {
+                    }
+
+                    override fun onAnimationStart(p0: Animator?) {
+                    }
+
+                })
+        }
+    }
+
+    private fun hide() {
+        label.apply {
+            alpha = 1f
+            visibility = View.VISIBLE
+
+            animate()
+                .alpha(0f)
+                .setDuration(200.toLong())
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationRepeat(p0: Animator?) {
+                    }
+
+                    override fun onAnimationEnd(p0: Animator?) {
+                        visibility = View.GONE
+                    }
+
+                    override fun onAnimationCancel(p0: Animator?) {
+                    }
+
+                    override fun onAnimationStart(p0: Animator?) {
+                    }
+
+                })
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -167,6 +229,7 @@ class MainActivity : AppCompatActivity() {
 //                            if (imageProxy != null) {
 //                                mamak.setImageBitmap(imageProxy.image?.toBitmap())
 //                            }
+                            show()
                             graphics_overlay.clear()
                             if (pose != null) {
                                 graphics_overlay.add(
