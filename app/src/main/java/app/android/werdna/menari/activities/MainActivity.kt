@@ -230,22 +230,22 @@ class MainActivity : AppCompatActivity() {
 //                                mamak.setImageBitmap(imageProxy.image?.toBitmap())
 //                            }
                             show()
-                            graphics_overlay.clear()
-                            if (pose != null) {
-                                graphics_overlay.add(
-                                    PoseGraphic(
-                                        graphics_overlay,
-                                        pose,
-                                        false,
-                                        imageProxy!!,
-                                        graphics_overlay.width,
-                                        graphics_overlay.height
-                                    )
-                                )
-                            } else {
-                                Log.d(TAG, "BO MIA CUI")
-                            }
-                            graphics_overlay.postInvalidate()
+//                            graphics_overlay.clear()
+//                            if (pose != null) {
+//                                graphics_overlay.add(
+//                                    PoseGraphic(
+//                                        graphics_overlay,
+//                                        pose,
+//                                        false,
+//                                        imageProxy!!,
+//                                        graphics_overlay.width,
+//                                        graphics_overlay.height
+//                                    )
+//                                )
+//                            } else {
+//                                Log.d(TAG, "BO MIA CUI")
+//                            }
+//                            graphics_overlay.postInvalidate()
                         })
                 }
 
