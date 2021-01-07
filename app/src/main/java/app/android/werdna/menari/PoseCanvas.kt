@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
+import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import java.lang.Math.max
@@ -14,12 +15,34 @@ import java.util.Locale
 class PoseGraphic internal constructor(
     overlay: GraphicOverlay,
     private val pose: Pose,
-    private val showInFrameLikelihood: Boolean
+    private val showInFrameLikelihood: Boolean,
+    private val imageProxy: ImageProxy,
+    private val viewWidth: Int,
+    private val viewHeight: Int
 ) :
     GraphicOverlay.Graphic(overlay) {
     private val leftPaint: Paint
     private val rightPaint: Paint
     private val redPaint: Paint
+    private var multiplierX: Float = 0f
+    private var multiplierY: Float = 0f
+
+    private fun getMultiplierX(): Float {
+        val width =
+            if (imageProxy.imageInfo.rotationDegrees % 180 == 0) imageProxy.width else imageProxy.height
+        return viewWidth.toFloat() / width.toFloat()
+    }
+
+    private fun getMultiplierY(): Float {
+        val height =
+            if (imageProxy.imageInfo.rotationDegrees % 180 == 0) imageProxy.height else imageProxy.width
+        return viewHeight.toFloat() / height.toFloat()
+    }
+
+    init {
+        multiplierX = getMultiplierX()
+        multiplierY = getMultiplierY()
+    }
 
     override fun draw(canvas: Canvas?) {
         val landmarks =
@@ -104,8 +127,8 @@ class PoseGraphic internal constructor(
     fun drawPoint(canvas: Canvas, landmark: PoseLandmark, paint: Paint) {
         val point = landmark.position
         canvas.drawCircle(
-            translateX(point.x),
-            translateY(point.y),
+            translateX(multiplierX * point.x),
+            translateY(multiplierY * point.y),
             DOT_RADIUS,
             paint
         )
@@ -120,7 +143,11 @@ class PoseGraphic internal constructor(
         val start = startLandmark.position
         val end = endLandmark.position
         canvas.drawLine(
-            translateX(start.x), translateY(start.y), translateX(end.x), translateY(end.y), paint
+            translateX(multiplierX * start.x),
+            translateY(multiplierY * start.y),
+            translateX(multiplierX * end.x),
+            translateY(multiplierY * end.y),
+            paint
         )
     }
 

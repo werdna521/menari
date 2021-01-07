@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Menari</string>
+    <string name="recommended_songs">Recommended Songs</string>
+    <string name="tunak_tunak_tun">Tunak Tunak Tun</string>
+    <string name="daler_mehndi">Daler Mehndi</string>
+    <string name="difficulty">Difficulty:</string>
+    <string name="highscore">Highscore:</string>
+    <string name="zero">0</string>
 </resources>
